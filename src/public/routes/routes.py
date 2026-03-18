@@ -1,16 +1,16 @@
 from ast import pattern
 import re,time
 from services import verif_mdp
-from flask import redirect, render_template,request, session, url_for
+from flask import redirect, render_template,request, session, url_for, flash
 from services import authen_service
 from services import cpt_service
 from services import authen_user_service, authen_service,login_admin
-
-
+import os
+uploaded_files = []  # liste en mémoire pour stocker les fichiers importés (un seul à la fois)
 def init_routes(app):
     @app.route("/")
     def home():
-        return render_template("index.html")
+        return render_template("index.html", files=uploaded_files)
 
     @app.route("/compte", methods=["GET", "POST"])
     def compte():
@@ -42,6 +42,12 @@ def init_routes(app):
             if not re.search(r"[A-Za-z]", password) or not re.search(r"[0-9]", password):
              return render_template("compte.html",
                                    notif_message="Le mot de passe doit contenir des lettres ET des chiffres!",
+                                   notif_type="warning")
+             
+                # Vérifier si l'email existe déjà
+            if cpt_service.emailExiste(mail):
+               return render_template("compte.html",
+                                   notif_message="Cet email existe déjà, veuillez en choisir un autre!",
                                    notif_type="warning")
              
             return cpt_service.creerCpt(mail, nom, pre, password)
@@ -112,4 +118,42 @@ def init_routes(app):
     
     @app.route("/about")
     def about():
-        return render_template("about.html")   
+        return render_template("about.html") 
+    
+    @app.route("/upload", methods=["POST"])
+    def upload():
+        print("UPLOAD ROUTE CALLED")
+        notif_message = None
+        notif_type = None
+        
+        file = request.files.get("file")
+        print("DEBUG file object:", file)
+        print("DEBUG filename:", repr(file.filename))
+        # Cas 1 : champ absent ou fichier non choisi
+        if not file or not file.filename or file.filename.strip() == "":
+         notif_message = "Veuillez choisir un fichier"
+         notif_type = "error"
+         print("DEBUG: Aucun fichier choisi")
+         return render_template("dashboard.html", files=uploaded_files,
+                               notif_message=notif_message, notif_type=notif_type)
+
+        if not file.filename.lower().endswith(".eml"):
+            notif_message = "Seuls les fichiers .eml sont autorisés"
+            notif_type = "error"
+            return render_template("dashboard.html", files=uploaded_files,
+                                   notif_message=notif_message, notif_type=notif_type)
+
+        # Sauvegarde
+        filepath = os.path.join("uploads", file.filename)
+        os.makedirs("uploads", exist_ok=True)
+        file.save(filepath)
+
+        # Remplacer la liste par un seul fichier (un seul à la fois)
+        uploaded_files.clear()
+        uploaded_files.append(file.filename)
+
+        notif_message = "Fichier importé avec succès"
+        notif_type = "success"
+
+        return render_template("dashboard.html", files=uploaded_files,
+                               notif_message=notif_message, notif_type=notif_type)

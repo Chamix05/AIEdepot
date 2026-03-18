@@ -14,6 +14,8 @@
     rel="stylesheet">
 
   <link href="{{url_for('static', filename='css/dashboard.css') }}" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard_notif.css') }}">
+
 </head>
 
 <body>
@@ -44,29 +46,51 @@
       <h1 class="display-4 mb-5">Analyse de Fichiers</h1>
       <div class="d-flex justify-content-center align-items-center flex-wrap">
         <!-- Champ input fichier avec icône intégrée -->
-        <div class="custom-input mb-3 mb-md-0">
-          <!-- Input fichier caché -->
-          <input id="fileInput" type="file" accept=".eml" hidden>
-          <!-- Label stylisé avec icône + texte -->
-          <label for="fileInput" class="form-control d-flex align-items-center">
-            <i class="bi bi-paperclip"></i>
-            <span class="text-truncate">Importer un fichier...</span>
-          </label>
-        </div>
+        <form action="/upload" method="post" enctype="multipart/form-data">
+          <div class="custom-input mb-3 mb-md-0 d-flex align-items-center gap-3">
+            <!-- Input fichier caché -->
+            <!--<input id="fileInput" type="file" name="file" accept=".eml" hidden required>-->
+            <input type="file" name="file" value="1">
 
-        <!-- Bouton analyser -->
-        <button class="btn-analyser" id="analyserBtn">
-          <i class="bi bi-shield-check me-2"></i>Analyser
-        </button>
+            <!-- Label stylisé avec icône + texte -->
+            <!-- <label for="fileInput" class="form-control d-flex align-items-center">
+              <i class="bi bi-paperclip"></i>
+              <span class="text-truncate">Importer un fichier...</span>
+            </label> -->
+            <!-- Bouton analyser -->
+            <button type="submit" class="btn-analyser" id="analyserBtn">
+              <i class="bi bi-shield-check me-2"></i>Analyser
+            </button>
+          </div>
+        </form>
       </div>
       <div id="resultBox" class="result-box shadow-lg"></div>
     </div>
   </main>
 
+  <!-- Notification Container -->
+  <div id="notificationContainer" class="notification-container">
+    <i id="notificationIcon" class="notification-icon"></i>
+    <div class="notification-message"></div>
+  </div>
   <!-- Bootstrap JS -->
   <script src="{{url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
   <script src="{{url_for('static', filename='js/dashboard.js') }}"></script>
   <script src="{{url_for('static', filename='js/menu.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/dashboard_notif.js') }}"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      console.log("notif_message:", "{{ notif_message }}"); // DEBUG
+      console.log("notif_type:", "{{ notif_type }}");       // DEBUG
+      {% if notif_message %}
+      showNotification("{{ notif_message|escape }}", "{{ notif_type|escape }}");
+      {% endif %}
+    });
+
+
+  </script>
+
 </body>
 
 </html>

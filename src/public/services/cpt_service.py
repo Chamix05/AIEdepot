@@ -19,3 +19,18 @@ def creerCpt(mail,nom, pre, password):
      return render_template("compte.html",
                                notif_message="Échec de la création du compte",
                                notif_type="error")
+     
+     
+
+def emailExiste(mail: str) -> bool:
+     db =  get_connection()
+     cursor = db.cursor(dictionary=True)
+     print("Je suis dans la fonction")  # Vérifie ce que Flask reçoit
+     sys.stdout.flush()
+     cursor.execute("SELECT 1 FROM utilisateur WHERE loginU = %s", (mail,))
+     user = cursor.fetchone()
+
+     cursor.close()
+     db.close()
+
+     return bool(user);

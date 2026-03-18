@@ -100,7 +100,11 @@
  }
 
  .btn-analyser {
-   padding: 15px 30px;
+   
+   padding: 0.25rem 3rem;
+   /* haut = 0.4rem, droite = 1rem, bas = 1rem, gauche = 1rem */
+   height: 100%;
+   /* prend la même hauteur que l’input */
    border-radius: 10px;
    border: none;
    background: linear-gradient(to right, #a0d2eb, #84ceeb);
@@ -249,5 +253,3 @@
    text-transform: capitalize;
 
  }
-
- 

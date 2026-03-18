@@ -1,0 +1,14 @@
+From: contact@entreprise.com
+To: utilisateur@test.com
+Subject: Confirmation de commande
+Date: Tue, 17 Mar 2026 10:00:00 +0100
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+
+Bonjour,
+
+Votre commande #12345 a bien été enregistrée.
+Vous recevrez une notification dès qu’elle sera expédiée.
+
+Cordialement,
+Service client
