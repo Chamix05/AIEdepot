@@ -23,6 +23,8 @@ jobs:
        pip install flask
        pip install pytest
 
+    - name: Set PYTHONPATH
+      run: echo "PYTHONPATH=$PYTHONPATH:src" >> $GITHUB_ENV
 
     - name: Run tests
       run: pytest -v
