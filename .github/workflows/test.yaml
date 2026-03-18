@@ -18,8 +18,11 @@ jobs:
       with:
         python-version: '3.11'
       
-    - name: Install pytest
-      run: pip install pytest
+    - name: Install dependencies
+      run: |
+       pip install flask
+       pip install pytest
+
 
     - name: Run tests
       run: pytest -v
