@@ -1,3 +1,4 @@
+import joblib
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.naive_bayes import MultinomialNB
@@ -20,14 +21,14 @@ x = bdd.drop(columns="target")
 
 # Initialiser les modèles
 
-foret= RandomForestClassifier(n_estimators=50, random_state=42,max_depth=10)
+#foret= RandomForestClassifier(n_estimators=50, random_state=42,max_depth=10)
 bayes = MultinomialNB()
 #svm = LinearSVC(max_iter=2000,random_state=42,dual=False)
 #log = LogisticRegression(max_iter=1000, random_state=42, solver="saga")
 
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
 
-foret.fit(x_train, y_train)
+#foret.fit(x_train, y_train)
 bayes.fit(x_train, y_train)
 #svm.fit(x_train, y_train)
 #log.fit(x_train, y_train)
@@ -48,10 +49,10 @@ bayes.fit(x_train, y_train)
 
 
 # Random Forest
-y_pred_foret = foret.predict(x_test)
-print("Random Forest")
-print(confusion_matrix(y_test, y_pred_foret))
-print(classification_report(y_test, y_pred_foret))
+#y_pred_foret = foret.predict(x_test)
+#print("Random Forest")
+#print(confusion_matrix(y_test, y_pred_foret))
+#print(classification_report(y_test, y_pred_foret))
 
 # Naive Bayes
 y_pred_bayes = bayes.predict(x_test)
@@ -61,3 +62,6 @@ print(classification_report(y_test, y_pred_bayes))
 
 
 #choix final:  Naive Bayes
+
+# Sauvegarder le modèle choisi
+joblib.dump(bayes, r"C:\\Users\DELL\Documents\\Phishing_PRJ-c2\src\\models\\naive_bayes.pkl")

@@ -14,6 +14,7 @@
     rel="stylesheet">
 
   <link href="{{url_for('static', filename='css/dashboard.css') }}" rel="stylesheet">
+  <link href="{{url_for('static', filename='css/resultat.css') }}" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard_notif.css') }}">
 
 </head>
@@ -46,7 +47,7 @@
       <h1 class="display-4 mb-5">Analyse de Fichiers</h1>
       <div class="d-flex justify-content-center align-items-center flex-wrap">
         <!-- Champ input fichier avec icône intégrée -->
-        <form action="/upload" method="post" enctype="multipart/form-data">
+        <form action="/upload" method="post" enctype="multipart/form-data" id="uploadForm">
           <div class="custom-input mb-3 mb-md-0 d-flex align-items-center gap-3">
             <!-- Input fichier caché -->
             <!--<input id="fileInput" type="file" name="file" accept=".eml" hidden required>-->
@@ -64,15 +65,36 @@
           </div>
         </form>
       </div>
-      <div id="resultBox" class="result-box shadow-lg"></div>
+
+
+      <div id="progressCircleContainer" style="display:none;" class="progress-circle-container">
+        <svg class="progress-circle" width="120" height="120">
+          <circle class="bg" cx="60" cy="60" r="54"></circle>
+          <circle class="progress" cx="60" cy="60" r="54"></circle>
+        </svg>
+        <div id="progressText" class="progress-text">0%</div>
+      </div>
+
+      <!--<div id="resultBox" class="result-box shadow-lg"></div> -->
+      <div id="resultBox" class="result-box shadow-lg">
+        {% if result %}
+        <p class="fw-bold">Résultat de l'analyse :</p>
+        <div class="result-highlight">{{ result }}</div>
+        {% endif %}
+      </div>
     </div>
   </main>
+
 
   <!-- Notification Container -->
   <div id="notificationContainer" class="notification-container">
     <i id="notificationIcon" class="notification-icon"></i>
     <div class="notification-message"></div>
   </div>
+
+
+
+
   <!-- Bootstrap JS -->
   <script src="{{url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
   <script src="{{url_for('static', filename='js/dashboard.js') }}"></script>
@@ -88,6 +110,44 @@
       {% endif %}
     });
 
+
+    document.getElementById("analyserBtn").addEventListener("submit", function (e) {
+      e.preventDefault(); // empêche le reload immédiat
+      // Affiche le cercle
+      let circleContainer = document.getElementById("progressCircleContainer");
+      circleContainer.style.display = "block";
+
+      let progressCircle = document.querySelector(".progress-circle .progress");
+      let progressText = document.getElementById("progressText");
+      let total = 339;
+      let width = 0;
+
+      // Durée totale souhaitée (ex. 30 secondes)
+      let duration = 10;
+      let stepTime = (duration * 1000) / 100;
+
+      let interval = setInterval(function () {
+        if (width >= 100) {
+          clearInterval(interval);
+
+          // Quand le cercle est rempli → envoyer le fichier au serveur
+          let formData = new FormData(document.getElementById("uploadForm"));
+          fetch("/upload", {
+            method: "POST",
+            body: formData
+          })
+            .then(response => response.text())
+            .then(html => {
+              document.getElementById("resultBox").innerHTML = html;
+            });
+        } else {
+          width += 1;
+          let offset = total - (total * width / 100);
+          progressCircle.style.strokeDashoffset = offset;
+          progressText.textContent = width + "%";
+        }
+      }, stepTime);
+    });
 
   </script>
 

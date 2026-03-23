@@ -1,0 +1,25 @@
+From: service@paypal.com
+To: louisa@example.com
+Subject: Your PayPal receipt for the purchase on March 22, 2026
+Date: Sun, 22 Mar 2026 18:15:00 +0100
+
+Body:  
+Hello Louisa,
+
+Thank you for using PayPal for your purchase.
+Here are the details of your transaction:
+
+Amount: €49.99
+
+Merchant: BoutiqueExample
+
+Date: March 22, 2026
+
+⚠️ Suspicious twist added by phishers:  
+We noticed an issue with your payment. To confirm your account and avoid suspension, please click the link below:
+http://paypal-secure-login.com/verify
+
+Failure to act within 24 hours will result in account suspension.
+
+Thank you for your prompt attention,
+— “PayPal Security Team”

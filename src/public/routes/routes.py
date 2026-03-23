@@ -5,6 +5,7 @@ from flask import redirect, render_template,request, session, url_for, flash
 from services import authen_service
 from services import cpt_service
 from services import authen_user_service, authen_service,login_admin
+from services.email_analysis import analyze_email
 import os
 uploaded_files = []  # liste en mémoire pour stocker les fichiers importés (un seul à la fois)
 def init_routes(app):
@@ -154,6 +155,16 @@ def init_routes(app):
 
         notif_message = "Fichier importé avec succès"
         notif_type = "success"
+        
+        
+        # Appel à ton script d’analyse
+        result = analyze_email(file.filename)
+        if result == "phishing":
+         notif_message = "Cet email est suspecté de phishing"
+         notif_type = "error"
+        else:
+         notif_message = "Cet email est légitime"
+         notif_type = "success"
 
         return render_template("dashboard.html", files=uploaded_files,
-                               notif_message=notif_message, notif_type=notif_type)
+                               notif_message=notif_message, notif_type=notif_type,  result=result)
