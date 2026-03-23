@@ -1,6 +1,10 @@
 import pytest
 from flask import Flask
-from src.public.app import init_routes   
+import sys, os
+from src.public.app import init_routes   # un seul import, cohérent
+
+# Ajouter src/ au chemin
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src")))
 
 @pytest.fixture
 def client():
