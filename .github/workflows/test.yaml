@@ -24,7 +24,7 @@ jobs:
        pip install pytest
 
     - name: Set PYTHONPATH
-      run: echo "PYTHONPATH=$PWD/Depot/src" >> $GITHUB_ENV
+      run: echo "PYTHONPATH=$PWD/src" >> $GITHUB_ENV
 
     - name: Run tests
       run: pytest -v
