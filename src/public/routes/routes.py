@@ -7,6 +7,8 @@ from services import cpt_service
 from services import authen_user_service, authen_service,login_admin
 from services.email_analysis import analyze_email
 import os
+from services.log import extract_log
+
 uploaded_files = []  # liste en mémoire pour stocker les fichiers importés (un seul à la fois)
 def init_routes(app):
     @app.route("/")
@@ -88,10 +90,11 @@ def init_routes(app):
              # Tentative échouée → incrémenter compteur
              # Authentification
             if username.endswith("@gmail.com") and "john.doe" in username:
-               return login_admin.check_login(username,password,"$argon2id$v=19$m=65536,t=3,p=4$1/qfk/L+n7M2pjRGiBFCqA$fusioJnuLiHvmxgW7Y0qBRDjlhzvTzX7n8EGKtJ9DpE")
+                session["loginU"] = username
+                return login_admin.check_login(username,password,"$argon2id$v=19$m=65536,t=3,p=4$1/qfk/L+n7M2pjRGiBFCqA$fusioJnuLiHvmxgW7Y0qBRDjlhzvTzX7n8EGKtJ9DpE")
             
             result =authen_user_service.authenticate(username, password)
-                
+ 
             if not result:  # si échec
                    session["attempts"] += 1
                    if session["attempts"] >= 3:
@@ -107,6 +110,7 @@ def init_routes(app):
             else:
                  # succès → reset compteur
                   session["attempts"] = 0
+                  session["loginU"] = username   # <-- stocker l'utilisateur connecté
                   return redirect(url_for("dashboard"))
                          
         return render_template("login.html")
@@ -152,13 +156,19 @@ def init_routes(app):
         # Remplacer la liste par un seul fichier (un seul à la fois)
         uploaded_files.clear()
         uploaded_files.append(file.filename)
+        
+          # Récupérer loginU depuis la session
+          
+        loginU = session.get("loginU", "unknown")
+        print("DEBUG loginU in session:", session.get("loginU"))
+
 
         notif_message = "Fichier importé avec succès"
         notif_type = "success"
         
         
         # Appel à ton script d’analyse
-        result = analyze_email(file.filename)
+        result = analyze_email(file.filename, loginU)
         if result == "phishing":
          notif_message = "Cet email est suspecté de phishing"
          notif_type = "error"
@@ -168,3 +178,12 @@ def init_routes(app):
 
         return render_template("dashboard.html", files=uploaded_files,
                                notif_message=notif_message, notif_type=notif_type,  result=result)
+        
+        
+        
+    @app.route("/logs")
+    def logs():
+        # Récupérer les logs depuis la base
+        logs = extract_log()
+        # Envoyer les logs au template
+        return render_template("logs.html",logs=logs)

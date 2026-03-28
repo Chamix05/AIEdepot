@@ -3,7 +3,7 @@ import joblib
 import scipy.sparse as sp
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-
+from db_connection import get_connection
 # Charger le modèle et les objets de prétraitement sauvegardés
 bayes = joblib.load(r"C:/Users/DELL/Documents/Phishing_PRJ-c2/src/models/naive_bayes.pkl")
 vectorizer_body = joblib.load(r"C:/Users/DELL/Documents/Phishing_PRJ-c2/src/models/vectorizer.pkl")
@@ -104,7 +104,31 @@ def is_suspicious_sender(sender: str) -> int:
                 return 1
     return 0
 
-def analyze_email(filename: str) -> str:
+
+def save_email(subject, body, urls, loginU, resultat):
+    db = get_connection()  # ta fonction qui ouvre la connexion
+    cursor = db.cursor()
+    
+
+    # Insérer dans la table classe
+    cursor.execute("""
+        INSERT INTO classe (resultat, idlog)
+        VALUES (%s, %s)
+    """, (resultat, loginU))
+     # Récupérer l'idc généré
+    idc = cursor.lastrowid
+
+    # Insérer dans la table email
+    cursor.execute("""
+        INSERT INTO email (corps, sujet, urls, piecesJ, loginU, idc)
+        VALUES (%s, %s, %s, %s, %s, %s)
+    """, (body, subject, ";".join(urls), None, loginU, idc))
+
+    db.commit()
+    cursor.close()
+    db.close()
+
+def analyze_email(filename: str, loginU: str) -> str:
     """Pipeline complet d'analyse d'un email uploadé"""
     filepath = os.path.join("uploads", filename)
     subject, body, sender = extract_email(filepath)
@@ -151,6 +175,10 @@ def analyze_email(filename: str) -> str:
     prediction = bayes.predict(X)
     if prediction[0] == 1 and sender_domain_suspicious == 0 and domain_consistent:
     # Le modèle dit phishing mais l'expéditeur est whitelisté
-     return "legitime"
+      resultat ="legitime"
     else:
-     return "phishing" if prediction[0] == 1 else "legitime"
+      resultat ="phishing" if prediction[0] == 1 else  "legitime"
+     # Sauvegarde en base
+     
+    save_email(subject, body, urls, loginU, resultat)
+    return resultat
