@@ -25,6 +25,6 @@ jobs:
 
     - name: Set PYTHONPATH
       run: echo "PYTHONPATH=$PWD/src" >> $GITHUB_ENV
-      
+
     - name: Run tests
       run: pytest -v
