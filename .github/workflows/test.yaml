@@ -22,9 +22,14 @@ jobs:
       run: |
        pip install flask
        pip install pytest
+       pip install -e .   # ← installe ton package Depot
+     
+    - name: Install project
+      run: pip install -e .
 
     - name: Set PYTHONPATH
       run: echo "PYTHONPATH=$PWD/src" >> $GITHUB_ENV
 
     - name: Run tests
-      run: pytest -v
+      run: PYTHONPATH=src pytest -v
+
