@@ -19,11 +19,16 @@ jobs:
         python-version: '3.11'
       
     - name: Install dependencies
-      run: |
+      run: | 
        pip install flask
        pip install pytest
-       pip install mysql-connector-python   # <-- ajoute cette ligne
-       pip install -e .  # installe ton package Depot
+       pip install mysql-connector-python  
+       pip install passlib   
+       pip install scikit-learn   
+       pip install nltk   
+       pip install mysql 
+       pip install mysql-connector-python   
+       pip install -e . 
      
     - name: Run tests
       run: PYTHONPATH=src pytest -v
