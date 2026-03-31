@@ -22,6 +22,7 @@ jobs:
       run: |
        pip install flask
        pip install pytest
+       pip install mysql-connector-python   # <-- ajoute cette ligne
        pip install -e .  # installe ton package Depot
      
     - name: Run tests
