@@ -1,7 +1,7 @@
 import os
 from flask import Flask
 from . import db_connection  #import db_connection   
-from .routes import routes  #  from routes import routes     importer le module routes/routes.py
+from .routes import routes  #from routes import routes     importer le module routes/routes.py
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
