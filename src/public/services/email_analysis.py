@@ -3,7 +3,7 @@ import joblib
 import scipy.sparse as sp
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-from db_connection import get_connection
+from ..db_connection import get_connection
 # Charger le modèle et les objets de prétraitement sauvegardés
 bayes = joblib.load(r"C:/Users/DELL/Documents/Phishing_PRJ-c2/src/models/naive_bayes.pkl")
 vectorizer_body = joblib.load(r"C:/Users/DELL/Documents/Phishing_PRJ-c2/src/models/vectorizer.pkl")

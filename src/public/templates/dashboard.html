@@ -16,7 +16,19 @@
   <link href="{{url_for('static', filename='css/dashboard.css') }}" rel="stylesheet">
   <link href="{{url_for('static', filename='css/resultat.css') }}" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard_notif.css') }}">
-
+  <style>
+    .waiting-message {
+      margin-top: 20px;
+      padding: 15px 20px;
+      background: linear-gradient(to right, #a0d2eb, #84ceeb);
+      color: #24243e;
+      font-weight: 600;
+      font-size: 18px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(160, 210, 235, 0.5);
+    }
+  </style>
 </head>
 
 <body>
@@ -83,6 +95,10 @@
         <div id="progressText" class="progress-text">0%</div>
       </div>
 
+      <div id="waitingMessage" class="waiting-message" style="display:none;">
+        🔍 Analyse en cours... Veuillez patienter quelques instants.
+      </div>
+
       <!--<div id="resultBox" class="result-box shadow-lg"></div> -->
       <div id="resultBox" class="result-box shadow-lg">
         {% if result %}
@@ -121,41 +137,24 @@
 
     document.getElementById("analyserBtn").addEventListener("submit", function (e) {
       e.preventDefault(); // empêche le reload immédiat
-      // Affiche le cercle
-      let circleContainer = document.getElementById("progressCircleContainer");
-      circleContainer.style.display = "block";
+      // Affiche le message d’attente
+      document.getElementById("waitingMessage").style.display = "block";
 
-      let progressCircle = document.querySelector(".progress-circle .progress");
-      let progressText = document.getElementById("progressText");
-      let total = 339;
-      let width = 0;
-
-      // Durée totale souhaitée (ex. 30 secondes)
-      let duration = 10;
-      let stepTime = (duration * 1000) / 100;
-
-      let interval = setInterval(function () {
-        if (width >= 100) {
-          clearInterval(interval);
-
-          // Quand le cercle est rempli → envoyer le fichier au serveur
-          let formData = new FormData(document.getElementById("uploadForm"));
-          fetch("/upload", {
-            method: "POST",
-            body: formData
-          })
-            .then(response => response.text())
-            .then(html => {
-              document.getElementById("resultBox").innerHTML = html;
-            });
-        } else {
-          width += 1;
-          let offset = total - (total * width / 100);
-          progressCircle.style.strokeDashoffset = offset;
-          progressText.textContent = width + "%";
-        }
-      }, stepTime);
+      // Envoie le fichier au serveur
+      let formData = new FormData(document.getElementById("uploadForm"));
+      fetch("/upload", {
+        method: "POST",
+        body: formData
+      })
+        .then(response => response.text())
+        .then(html => {
+          document.getElementById("resultBox").innerHTML = html;
+          // Cache le message une fois terminé
+          document.getElementById("waitingMessage").style.display = "none";
+        });
     });
+
+
 
   </script>
 

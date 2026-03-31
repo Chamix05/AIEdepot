@@ -1,13 +1,13 @@
 from ast import pattern
 import re,time
-from services import verif_mdp
+from ..services import verif_mdp
 from flask import redirect, render_template,request, session, url_for, flash
-from services import authen_service
-from services import cpt_service
-from services import authen_user_service, authen_service,login_admin
-from services.email_analysis import analyze_email
+from ..services import authen_service
+from ..services import cpt_service
+from ..services import authen_user_service, authen_service,login_admin
+from ..services.email_analysis import analyze_email
 import os
-from services.log import extract_log
+from ..services.log import extract_log
 
 uploaded_files = []  # liste en mémoire pour stocker les fichiers importés (un seul à la fois)
 def init_routes(app):
@@ -130,10 +130,9 @@ def init_routes(app):
         print("UPLOAD ROUTE CALLED")
         notif_message = None
         notif_type = None
-        
         file = request.files.get("file")
         print("DEBUG file object:", file)
-        print("DEBUG filename:", repr(file.filename))
+        
         # Cas 1 : champ absent ou fichier non choisi
         if not file or not file.filename or file.filename.strip() == "":
          notif_message = "Veuillez choisir un fichier"
@@ -141,6 +140,9 @@ def init_routes(app):
          print("DEBUG: Aucun fichier choisi")
          return render_template("dashboard.html", files=uploaded_files,
                                notif_message=notif_message, notif_type=notif_type)
+        
+         
+        print("DEBUG filename:", repr(file.filename))
 
         if not file.filename.lower().endswith(".eml"):
             notif_message = "Seuls les fichiers .eml sont autorisés"

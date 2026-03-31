@@ -99,24 +99,48 @@
    /* Texte clair sur fond sombre */
  }
 
- .btn-analyser {
+ /*
+.btn-analyser {
    
    padding: 0.25rem 3rem;
    /* haut = 0.4rem, droite = 1rem, bas = 1rem, gauche = 1rem */
-   height: 100%;
-   /* prend la même hauteur que l’input */
+ /*height: 100%;*/
+ /* prend la même hauteur que l’input */
+ /*border-radius: 10px;
+   /*border: none;
+   background: linear-gradient(to right, #a0d2eb, #84ceeb);
+   /* Gradient bleu clair */
+ /*color: #24243e;
+   /* Texte sombre */
+ /*font-weight: 600;
+   font-size: 18px;
+   box-shadow: 0 4px 15px rgba(160, 210, 235, 0.5);
+   transition: all 0.3s ease;
+   cursor: pointer;
+ }
+ */
+
+
+ .btn-analyser {
+   display: flex;
+   align-items: center;
+   /* centre verticalement */
+   justify-content: center;
+   /* centre horizontalement */
+   padding: 0.5rem 3rem 0.5rem 1rem;
+
+   /* haut/bas équilibrés */
    border-radius: 10px;
    border: none;
    background: linear-gradient(to right, #a0d2eb, #84ceeb);
-   /* Gradient bleu clair */
    color: #24243e;
-   /* Texte sombre */
    font-weight: 600;
    font-size: 18px;
    box-shadow: 0 4px 15px rgba(160, 210, 235, 0.5);
    transition: all 0.3s ease;
    cursor: pointer;
  }
+
 
  .btn-analyser:hover {
    transform: translateY(-3px);

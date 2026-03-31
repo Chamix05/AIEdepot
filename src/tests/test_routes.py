@@ -1,12 +1,14 @@
 import pytest
 from flask import Flask
-from src.public.app import init_routes   # un seul import, cohérent
+from public import db_connection
+from public.routes.routes import init_routes 
+from public.app import app 
 
 @pytest.fixture
 def client():
-    app = Flask(__name__)
+    
     app.config['TESTING'] = True
-    init_routes(app)
+    
     with app.test_client() as client:
         yield client
 
@@ -33,6 +35,10 @@ def test_logout(client):
 
 def test_about(client):
     response = client.get("/about")
+    assert response.status_code == 200
+    
+def test_logs(client):
+    response = client.get("/logs")
     assert response.status_code == 200
 
 def test_upload_without_file(client):
