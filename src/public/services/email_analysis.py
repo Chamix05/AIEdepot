@@ -5,7 +5,9 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from ..db_connection import get_connection
 # Charger le modèle et les objets de prétraitement sauvegardés
-bayes = joblib.load(r"C:/Users/DELL/images/Phishing_PRJ-c2/src/models/naive_bayes.pkl")
+base_dir = os.path.dirname(__file__)  # dossier courant
+model_path = os.path.join(base_dir, "..", "models", "naive_bayes.pkl")
+bayes = joblib.load(model_path)
 vectorizer_body = joblib.load(r"C:/Users/DELL/images/Phishing_PRJ-c2/src/models/vectorizer.pkl")
 vectorizer_subject = joblib.load(r"C:/Users/DELL/images/Phishing_PRJ-c2/src/models/vectorizer_subject.pkl")
 vectorizer_coined = joblib.load(r"C:/Users/DELL/images/Phishing_PRJ-c2/src/models/vectorizer_coined.pkl")
