@@ -8,6 +8,10 @@ from ..db_connection import get_connection
 base_dir = os.path.dirname(__file__)  # dossier courant
 model_path = os.path.join(base_dir, "..", "models", "naive_bayes.pkl")
 bayes = joblib.load(model_path)
+if not os.path.exists(model_path):
+    raise FileNotFoundError(f"Modèle introuvable à {model_path}. Vérifie que le fichier est bien présent.")
+bayes = joblib.load(model_path)
+
 vectorizer_body = joblib.load(r"C:/Users/DELL/images/Phishing_PRJ-c2/src/models/vectorizer.pkl")
 vectorizer_subject = joblib.load(r"C:/Users/DELL/images/Phishing_PRJ-c2/src/models/vectorizer_subject.pkl")
 vectorizer_coined = joblib.load(r"C:/Users/DELL/images/Phishing_PRJ-c2/src/models/vectorizer_coined.pkl")
