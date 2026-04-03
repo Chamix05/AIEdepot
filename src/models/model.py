@@ -11,7 +11,7 @@ from sklearn.metrics import classification_report, confusion_matrix
 
 #Pour la détection de phishing, on considère phishing = classe positive
 
-bdd = pd.read_csv("C:/Users/DELL/Documents/Phishing_PRJ-copie/src/dataset/processed/dataset_pretraite_vect.csv")
+bdd = pd.read_csv("C:/Users/DELL/images/Phishing_PRJ-c2/src/dataset/processed/dataset_pretraite_vect.csv")
 
 print(bdd.head())
 

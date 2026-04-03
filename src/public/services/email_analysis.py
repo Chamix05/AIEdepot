@@ -6,11 +6,11 @@ from nltk.stem import WordNetLemmatizer
 from ..db_connection import get_connection
 # Charger le modèle et les objets de prétraitement sauvegardés
 bayes = joblib.load(r"C:/Users/DELL/images/Phishing_PRJ-c2/src/models/naive_bayes.pkl")
-vectorizer_body = joblib.load(r"C:/Users/DELL//Phishing_PRJ-c2/src/models/vectorizer.pkl")
-vectorizer_subject = joblib.load(r"C:/Users/DELL/Documents/Phishing_PRJ-c2/src/models/vectorizer_subject.pkl")
-vectorizer_coined = joblib.load(r"C:/Users/DELL/Documents/Phishing_PRJ-c2/src/models/vectorizer_coined.pkl")
-scaler = joblib.load(r"C:/Users/DELL/Documents/Phishing_PRJ-c2/src/models/scaler.pkl")
-encoder = joblib.load(r"C:/Users/DELL/Documents/Phishing_PRJ-c2/src/models/encoder.pkl")
+vectorizer_body = joblib.load(r"C:/Users/DELL/images/Phishing_PRJ-c2/src/models/vectorizer.pkl")
+vectorizer_subject = joblib.load(r"C:/Users/DELL/images/Phishing_PRJ-c2/src/models/vectorizer_subject.pkl")
+vectorizer_coined = joblib.load(r"C:/Users/DELL/images/Phishing_PRJ-c2/src/models/vectorizer_coined.pkl")
+scaler = joblib.load(r"C:/Users/DELL/images/Phishing_PRJ-c2/src/models/scaler.pkl")
+encoder = joblib.load(r"C:/Users/DELL/images/Phishing_PRJ-c2/src/models/encoder.pkl")
 
 stop_words = set(stopwords.words("english"))
 lemmatizer = WordNetLemmatizer()
