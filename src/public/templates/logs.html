@@ -28,6 +28,7 @@
       <div class="d-flex ms-auto me-3">
         <a class="shiny-white-button me-2" href="/about">À propos</a>
         <a class="shiny-white-button me-2" href="/logs">Logs</a>
+        <a class="shiny-white-button me-2" href="/dashboard?action=retrain">Actualiser</a>
         <a class="shiny-white-button me-2" href="/logout">Déconnexion</a>
       </div>
       <span class="text-white fs-4 fw-bold" style="font-family: 'Orbitron', sans-serif;">
@@ -52,7 +53,7 @@
             </tr>
           </thead>
           <tbody id="logsTableBody">
-            {% for sujet, loginU, resultat in logs %}
+            {% for sujet, loginU, resultat, corps, urls in logs %}
             <tr>
               <td>{{ loginU }}</td>
               <td>{{ sujet }}</td>

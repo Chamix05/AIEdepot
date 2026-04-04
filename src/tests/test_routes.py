@@ -1,6 +1,7 @@
 import pytest
 from flask import Flask
-from src.public.app import init_routes   
+from public.app import init_routes   # un seul import, cohérent
+from src.public import db_connection
 
 @pytest.fixture
 def client():

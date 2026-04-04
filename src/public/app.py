@@ -1,6 +1,6 @@
 from flask import Flask
-import db_connection 
-from routes import routes   # importer le module routes/routes.py
+import db_connection    
+from routes import routes   
 
 app = Flask(__name__,template_folder="templates", static_folder="static")
 

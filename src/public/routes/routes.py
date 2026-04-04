@@ -1,13 +1,14 @@
 from ast import pattern
 import re,time
 from services import verif_mdp
-from flask import redirect, render_template,request, session, url_for, flash
+from flask import redirect, render_template, request, session, url_for, flash
 from services import authen_service
 from services import cpt_service
 from services import authen_user_service, authen_service,login_admin
 from services.email_analysis import analyze_email
 import os
 from services.log import extract_log
+from services.entrainer import retrain_model
 
 uploaded_files = []  # liste en mémoire pour stocker les fichiers importés (un seul à la fois)
 def init_routes(app):
@@ -63,7 +64,14 @@ def init_routes(app):
 
     @app.route("/dashboard")
     def dashboard():
-        return render_template("dashboard.html")
+        
+          # Vérifier si l'utilisateur a cliqué sur "Actualiser"
+       action = request.args.get("action")
+
+       if action == "retrain":
+        return retrain_model()
+    
+       return render_template("dashboard.html")
     
     @app.route("/login", methods=["GET", "POST"])
     def login():
@@ -180,10 +188,11 @@ def init_routes(app):
                                notif_message=notif_message, notif_type=notif_type,  result=result)
         
         
-        
     @app.route("/logs")
     def logs():
         # Récupérer les logs depuis la base
         logs = extract_log()
         # Envoyer les logs au template
         return render_template("logs.html",logs=logs)
+    
+   

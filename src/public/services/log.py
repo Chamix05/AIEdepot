@@ -5,7 +5,7 @@ def extract_log():
     db = get_connection()  # ta fonction qui ouvre la connexion
     cursor = db.cursor()
     cursor.execute("""
-        SELECT e.sujet,e.loginU,c.resultat
+        SELECT e.sujet,e.loginU,c.resultat,e.corps,e.urls
         FROM email e
         JOIN classe c ON e.idc = c.idc
        
