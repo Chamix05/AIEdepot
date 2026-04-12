@@ -3,14 +3,26 @@ import joblib
 import scipy.sparse as sp
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-from db_connection import get_connection
+from ..db_connection import get_connection
+#from public.db_connection import get_connection
+import numpy as np
+
 # Charger le modèle et les objets de prétraitement sauvegardés
-bayes = joblib.load(r"C:/Users/DELL/Documents/Phishing_PRJ-c2/src/models/naive_bayes.pkl")
-vectorizer_body = joblib.load(r"C:/Users/DELL/Documents/Phishing_PRJ-c2/src/models/vectorizer.pkl")
-vectorizer_subject = joblib.load(r"C:/Users/DELL/Documents/Phishing_PRJ-c2/src/models/vectorizer_subject.pkl")
-vectorizer_coined = joblib.load(r"C:/Users/DELL/Documents/Phishing_PRJ-c2/src/models/vectorizer_coined.pkl")
-scaler = joblib.load(r"C:/Users/DELL/Documents/Phishing_PRJ-c2/src/models/scaler.pkl")
-encoder = joblib.load(r"C:/Users/DELL/Documents/Phishing_PRJ-c2/src/models/encoder.pkl")
+base_dir = os.path.dirname(__file__)  # dossier courant
+#model_path = os.path.join(base_dir, "..","..", "models", "naive_bayes.pkl")
+model_dir = os.path.join(base_dir, "..","..","models")
+model_path = os.path.join(model_dir, "naive_bayes.pkl")
+if not os.path.exists(model_path):
+    raise FileNotFoundError(f"Modèle introuvable à {model_path}. Vérifie que le fichier est bien présent.")
+bayes = joblib.load(model_path)
+
+
+vectorizer_body = joblib.load(os.path.join(model_dir, "vectorizer.pkl"))
+vectorizer_subject = joblib.load(os.path.join(model_dir, "vectorizer_subject.pkl"))
+vectorizer_coined = joblib.load(os.path.join(model_dir, "vectorizer_coined.pkl"))
+print("Taille vocabulaire Coined:", len(vectorizer_coined.vocabulary_))
+scaler = joblib.load(os.path.join(model_dir, "scaler.pkl"))
+encoder = joblib.load(os.path.join(model_dir, "encoder.pkl"))
 
 stop_words = set(stopwords.words("english"))
 lemmatizer = WordNetLemmatizer()

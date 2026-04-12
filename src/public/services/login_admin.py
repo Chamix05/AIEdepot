@@ -1,7 +1,9 @@
 import time
 
 from flask import redirect, render_template, session, url_for
-from services import authen_service,verif_mdp
+#from ..services import authen_service,verif_mdp
+#from services import authen_service,verif_mdp
+from . import authen_service,verif_mdp
 
 def check_login(username,password,expected_pass):
     

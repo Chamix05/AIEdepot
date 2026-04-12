@@ -1,4 +1,6 @@
-from services.log import extract_log
+#from services.log import extract_log
+from .log import extract_log
+
 import joblib
 import pandas as pd
 import scipy.sparse as sp
@@ -6,13 +8,13 @@ from flask import render_template
 
 def retrain_model():
     # Charger les objets de prétraitement
-    vectorizer = joblib.load(r"C:/Users/DELL/Documents/Phishing_PRJ-c2/src/models/vectorizer.pkl")
-    vectorizer_subject = joblib.load(r"C:/Users/DELL/Documents/Phishing_PRJ-c2/src/models/vectorizer_subject.pkl")
-    vectorizer_coined = joblib.load(r"C:/Users/DELL/Documents/Phishing_PRJ-c2/src/models/vectorizer_coined.pkl")
-    scaler = joblib.load(r"C:/Users/DELL/Documents/Phishing_PRJ-c2/src/models/scaler.pkl")
-    encoder = joblib.load(r"C:/Users/DELL/Documents/Phishing_PRJ-c2/src/models/encoder.pkl")
+    vectorizer = joblib.load(r"src/models/vectorizer.pkl")
+    vectorizer_subject = joblib.load(r"src/models/vectorizer_subject.pkl")
+    vectorizer_coined = joblib.load(r"src/models/vectorizer_coined.pkl")
+    scaler = joblib.load(r"src/models/scaler.pkl")
+    encoder = joblib.load(r"src/models/encoder.pkl")
 
-    bayes = joblib.load(r"C:/Users/DELL/Documents/Phishing_PRJ-c2/src/models/naive_bayes.pkl")
+    bayes = joblib.load(r"src/models/naive_bayes.pkl")
 
     # Extraire les emails classifiés
     logs = extract_log()
@@ -58,7 +60,7 @@ def retrain_model():
 
     # Réentraîner
     bayes.fit(X, y)
-    joblib.dump(bayes, r"C:/Users/DELL/Documents/Phishing_PRJ-c2/src/models/naive_bayes.pkl")
+    joblib.dump(bayes, r"src/models/naive_bayes.pkl")
 
     # Préparer la notification
     notif_message = "Modèle Naive Bayes réentraîné avec succès!"

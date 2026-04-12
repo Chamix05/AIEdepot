@@ -1,8 +1,12 @@
 
-from db_connection import get_connection
+
+
+from ..db_connection import get_connection
 from flask import redirect, url_for, flash
 import sys
-from services import verif_mdp
+#from ..services import verif_mdp
+#from services import verif_mdp
+from . import verif_mdp
 
 def authenticate(username, password):
     db =  get_connection()

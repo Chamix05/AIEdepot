@@ -1,3 +1,5 @@
+from copyreg import pickle
+import os
 import joblib
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
@@ -9,9 +11,10 @@ from sklearn.metrics import classification_report, confusion_matrix
 
 #Pour la détection de phishing, on considère phishing = classe positive
 
-bdd = pd.read_csv("C:/Users/DELL/Documents/Phishing_PRJ-copie/src/dataset/processed/dataset_pretraite_vect.csv")
+bdd = pd.read_csv("C:/Users/LAPTA/Documents/M1ASR/M1 S2/PROJ AIE/vsfinale/Phishing_PRJ-c2/src/dataset/processed/dataset_pretraite_vect.csv")
 
 print(bdd.head())
+print(bdd.shape)
 
 #cible
 y = bdd["target"]
@@ -64,4 +67,13 @@ print(classification_report(y_test, y_pred_bayes))
 #choix final:  Naive Bayes
 
 # Sauvegarder le modèle choisi
-joblib.dump(bayes, r"C:\\Users\DELL\Documents\\Phishing_PRJ-c2\src\\models\\naive_bayes.pkl")
+
+#model_path = os.path.join(os.path.dirname(__file__), "..", "models", "naive_bayes.pkl")
+#with open(model_path, "rb") as f:
+    #model = pickle.load(f)
+
+#model_path = os.path.join(os.path.dirname(__file__), "..", "models", "naive_bayes.pkl")
+model_path = os.path.join(os.path.dirname(__file__), "naive_bayes.pkl")
+joblib.dump(bayes, model_path)
+print(f"Modèle sauvegardé à {model_path}")
+print("Shape attendu par le modèle:", bayes.n_features_in_)
