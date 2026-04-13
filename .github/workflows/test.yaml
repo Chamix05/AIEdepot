@@ -9,6 +9,20 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_DATABASE: phishing_db
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -31,6 +45,26 @@ jobs:
 
     - name: Download NLTK data
       run: python -c "import nltk; nltk.download('stopwords'); nltk.download('punkt')"
+
+    - name: Wait for MySQL
+      run: |
+        sudo apt-get install -y mysql-client
+        until mysqladmin ping -h "127.0.0.1" --silent; do
+          sleep 2
+        done
+
+    - name: Initialize database
+      run: |
+        mysql -h 127.0.0.1 -uroot -e "
+        CREATE DATABASE IF NOT EXISTS phishing_db;
+        USE phishing_db;
+
+        CREATE TABLE IF NOT EXISTS users (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            username VARCHAR(255),
+            password VARCHAR(255)
+        );
+        "
 
     - name: Run tests
       run: PYTHONPATH=src pytest -v
