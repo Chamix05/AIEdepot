@@ -26,7 +26,13 @@ def emailExiste(mail: str) -> bool:
      db =  get_connection()
      cursor = db.cursor(dictionary=True)
      print("Je suis dans la fonction")  # Vérifie ce que Flask reçoit
-     sys.stdout.flush()
+     if mail == "john.doe@gmail.com":
+        print("Adresse email interdite")
+        sys.stdout.flush()
+        cursor.close()
+        db.close()
+        return True
+    
      cursor.execute("SELECT 1 FROM utilisateur WHERE loginU = %s", (mail,))
      user = cursor.fetchone()
 

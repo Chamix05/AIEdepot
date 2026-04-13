@@ -8,10 +8,10 @@ from sklearn.svm import LinearSVC
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report, confusion_matrix
-#rien
+
 #Pour la détection de phishing, on considère phishing = classe positive
 
-bdd = pd.read_csv("C:/Users/LAPTA/Documents/M1ASR/M1 S2/PROJ AIE/vsfinale/Phishing_PRJ-c2/src/dataset/processed/dataset_pretraite_vect.csv")
+bdd = pd.read_csv("Phishing_PRJ-c2/src/dataset/processed/dataset_pretraite_vect.csv")
 
 print(bdd.head())
 print(bdd.shape)
@@ -36,26 +36,8 @@ bayes.fit(x_train, y_train)
 #svm.fit(x_train, y_train)
 #log.fit(x_train, y_train)
 
-#test_score_foret = foret.score(x_test, y_test)
-#test_score_bayes = bayes.score(x_test, y_test)
-#test_score_svm = svm.score(x_test, y_test)
-#test_score_log = log.score(x_test, y_test)
-
-
 # Accuracy : Accuracy (exactitude) = proportion de tous les tuples (emails) correctement classifiés (légitimes + phishing).
 
-
-#print(f"Random Forest - Test Accuracy: {test_score_foret:.2f}")
-#print(f"Naive Bayes - Test Accuracy: {test_score_bayes:.2f}")
-#print(f"SVM - Test Accuracy: {test_score_svm:.2f}")
-#print(f"Logistic Regression - Test Accuracy: {test_score_log:.2f}")
-
-
-# Random Forest
-#y_pred_foret = foret.predict(x_test)
-#print("Random Forest")
-#print(confusion_matrix(y_test, y_pred_foret))
-#print(classification_report(y_test, y_pred_foret))
 
 # Naive Bayes
 y_pred_bayes = bayes.predict(x_test)
@@ -73,7 +55,7 @@ print(classification_report(y_test, y_pred_bayes))
     #model = pickle.load(f)
 
 #model_path = os.path.join(os.path.dirname(__file__), "..", "models", "naive_bayes.pkl")
-model_path = os.path.join(os.path.dirname(__file__), "naive_bayes.pkl")
-joblib.dump(bayes, model_path)
-print(f"Modèle sauvegardé à {model_path}")
+
+joblib.dump(bayes, "Phishing_PRJ-c2/src/models/naive_bayes.pkl")
+print("Modèle sauvegardé")
 print("Shape attendu par le modèle:", bayes.n_features_in_)

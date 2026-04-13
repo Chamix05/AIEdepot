@@ -8,21 +8,34 @@ from ..db_connection import get_connection
 import numpy as np
 
 # Charger le modèle et les objets de prétraitement sauvegardés
-base_dir = os.path.dirname(__file__)  # dossier courant
+#base_dir = os.path.dirname(__file__)  # dossier courant
 #model_path = os.path.join(base_dir, "..","..", "models", "naive_bayes.pkl")
-model_dir = os.path.join(base_dir, "..","..","models")
-model_path = os.path.join(model_dir, "naive_bayes.pkl")
-if not os.path.exists(model_path):
-    raise FileNotFoundError(f"Modèle introuvable à {model_path}. Vérifie que le fichier est bien présent.")
-bayes = joblib.load(model_path)
+#model_dir = os.path.join(base_dir, "..","..","models")
+#model_path = os.path.join(model_dir, "naive_bayes.pkl")
+#if not os.path.exists(model_path):
+    #raise FileNotFoundError(f"Modèle introuvable à {model_path}. Vérifie que le fichier est bien présent.")
+#bayes = joblib.load(model_path)
+
+pipeline = joblib.load("Phishing_PRJ-c2/src/models/pipeline.pkl")
+bayes = joblib.load("Phishing_PRJ-c2/src/models/naive_bayes.pkl")
 
 
-vectorizer_body = joblib.load(os.path.join(model_dir, "vectorizer.pkl"))
-vectorizer_subject = joblib.load(os.path.join(model_dir, "vectorizer_subject.pkl"))
-vectorizer_coined = joblib.load(os.path.join(model_dir, "vectorizer_coined.pkl"))
-print("Taille vocabulaire Coined:", len(vectorizer_coined.vocabulary_))
-scaler = joblib.load(os.path.join(model_dir, "scaler.pkl"))
-encoder = joblib.load(os.path.join(model_dir, "encoder.pkl"))
+#vectorizer_body = joblib.load(os.path.join(model_dir, "vectorizer.pkl"))
+#vectorizer_subject = joblib.load(os.path.join(model_dir, "vectorizer_subject.pkl"))
+#vectorizer_coined = joblib.load(os.path.join(model_dir, "vectorizer_coined.pkl"))
+#print("Taille vocabulaire Coined:", len(vectorizer_coined.vocabulary_))
+#scaler = joblib.load(os.path.join(model_dir, "scaler.pkl"))
+#encoder = joblib.load(os.path.join(model_dir, "encoder.pkl"))
+
+
+vectorizer_body = pipeline["vectorizer_body"]
+vectorizer_subject = pipeline["vectorizer_subject"]
+vectorizer_coined = pipeline["vectorizer_coined"]
+encoder = pipeline["encoder"]
+scaler = pipeline["scaler"]
+
+
+
 
 stop_words = set(stopwords.words("english"))
 lemmatizer = WordNetLemmatizer()
@@ -179,17 +192,33 @@ def analyze_email(filename: str, loginU: str) -> str:
         sp.csr_matrix([sender_encoded]).T,
         sp.csr_matrix(X_other)
     ])
+    
+    print("Body:", vectorizer_body.transform([body_clean]).shape)
+    print("Subject:", vectorizer_subject.transform([subject_clean]).shape)
+    print("Coined:", vectorizer_coined.transform([""]).shape)
+    print("Sender:", sp.csr_matrix([sender_encoded]).T.shape)
+    print("Other:", sp.csr_matrix(X_other).shape)
+    print("Final X:", X.shape)
+   
+   
+    # Prédiction avec seuil ajusté
+    proba = bayes.predict_proba(X)
+    # proba[0][1] = probabilité que ce soit phishing
+    if proba[0][1] >= 0.6:
+        prediction = 1  # phishing
+    else:
+        prediction = 0  # legitime
 
     # Prédiction
     #Donc tu as deux signaux qui se contredisent :
     #Le modèle ML dit phishing.
     #La règle métier dit légitime.
     prediction = bayes.predict(X)
-    if prediction[0] == 1 and sender_domain_suspicious == 0 and domain_consistent:
+    if prediction == 1 and sender_domain_suspicious == 0 and domain_consistent:
     # Le modèle dit phishing mais l'expéditeur est whitelisté
       resultat ="legitime"
     else:
-      resultat ="phishing" if prediction[0] == 1 else  "legitime"
+      resultat ="phishing" if prediction == 1 else  "legitime"
      # Sauvegarde en base
      
     save_email(subject, body, urls, loginU, resultat)
