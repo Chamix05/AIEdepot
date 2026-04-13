@@ -8,7 +8,7 @@ from sklearn.svm import LinearSVC
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report, confusion_matrix
-
+#rien
 #Pour la détection de phishing, on considère phishing = classe positive
 
 bdd = pd.read_csv("C:/Users/LAPTA/Documents/M1ASR/M1 S2/PROJ AIE/vsfinale/Phishing_PRJ-c2/src/dataset/processed/dataset_pretraite_vect.csv")
