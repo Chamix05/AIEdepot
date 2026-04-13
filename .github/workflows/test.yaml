@@ -30,11 +30,7 @@ jobs:
         pip install -e .
 
     - name: Download NLTK data
-      run: |
-        python - <<EOF
-import nltk
-nltk.download('stopwords')
-EOF
+      run: python -c "import nltk; nltk.download('stopwords'); nltk.download('punkt')"
 
     - name: Run tests
       run: PYTHONPATH=src pytest -v
