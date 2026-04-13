@@ -6,8 +6,8 @@ import subprocess
 
 def retrain_model():
     # Charger dataset initial
-    bdd = pd.read_csv("Phishing_PRJ-c2/src/dataset/merged_dataset.csv")
-    bayes = joblib.load("Phishing_PRJ-c2/src/models/naive_bayes.pkl")
+    bdd = pd.read_csv("src/dataset/merged_dataset.csv")
+    bayes = joblib.load("src/models/naive_bayes.pkl")
 
     # Charger les logs
     logs = extract_log()
@@ -23,13 +23,13 @@ def retrain_model():
     bdd_full = pd.concat([bdd, df_logs], ignore_index=True)
 
     # Sauvegarder dataset enrichi
-    bdd_full.to_csv("Phishing_PRJ-c2/src/dataset/merged_dataset.csv", index=False)
+    bdd_full.to_csv("src/dataset/merged_dataset.csv", index=False)
 
     # Relancer ton script de prétraitement complet
-    subprocess.run(["python", "Phishing_PRJ-c2/src/dataset/processed/phishing_dataset.py"])
+    subprocess.run(["python", "src/dataset/processed/phishing_dataset.py"])
 
     # Sauvegarder le modèle mis à jour
-    joblib.dump(bayes, "Phishing_PRJ-c2/src/models/naive_bayes.pkl")
+    joblib.dump(bayes, "src/models/naive_bayes.pkl")
 
     notif_message = "Modèle Naive Bayes réentraîné avec succès !"
     notif_type = "success"

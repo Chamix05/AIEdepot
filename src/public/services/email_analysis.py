@@ -16,8 +16,8 @@ import numpy as np
     #raise FileNotFoundError(f"Modèle introuvable à {model_path}. Vérifie que le fichier est bien présent.")
 #bayes = joblib.load(model_path)
 
-pipeline = joblib.load("Phishing_PRJ-c2/src/models/pipeline.pkl")
-bayes = joblib.load("Phishing_PRJ-c2/src/models/naive_bayes.pkl")
+pipeline = joblib.load("src/models/pipeline.pkl")
+bayes = joblib.load("src/models/naive_bayes.pkl")
 
 
 #vectorizer_body = joblib.load(os.path.join(model_dir, "vectorizer.pkl"))

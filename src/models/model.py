@@ -11,7 +11,7 @@ from sklearn.metrics import classification_report, confusion_matrix
 
 #Pour la détection de phishing, on considère phishing = classe positive
 
-bdd = pd.read_csv("Phishing_PRJ-c2/src/dataset/processed/dataset_pretraite_vect.csv")
+bdd = pd.read_csv("src/dataset/processed/dataset_pretraite_vect.csv")
 
 print(bdd.head())
 print(bdd.shape)
@@ -56,6 +56,6 @@ print(classification_report(y_test, y_pred_bayes))
 
 #model_path = os.path.join(os.path.dirname(__file__), "..", "models", "naive_bayes.pkl")
 
-joblib.dump(bayes, "Phishing_PRJ-c2/src/models/naive_bayes.pkl")
+joblib.dump(bayes, "src/models/naive_bayes.pkl")
 print("Modèle sauvegardé")
 print("Shape attendu par le modèle:", bayes.n_features_in_)
