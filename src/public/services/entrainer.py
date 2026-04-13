@@ -8,10 +8,10 @@ from flask import render_template
 
 def retrain_model():
     # Charger les objets de prétraitement
-    vectorizer = joblib.load(r"src/models/vectorizer.pkl")
+    """vectorizer = joblib.load(r"src/models/vectorizer.pkl")
     vectorizer_subject = joblib.load(r"src/models/vectorizer_subject.pkl")
     vectorizer_coined = joblib.load(r"src/models/vectorizer_coined.pkl")
-    scaler = joblib.load(r"src/models/scaler.pkl")
+    scaler = joblib.load(r"src/models/scaler.pkl")"""
     encoder = joblib.load(r"src/models/encoder.pkl")
 
     bayes = joblib.load(r"src/models/naive_bayes.pkl")
