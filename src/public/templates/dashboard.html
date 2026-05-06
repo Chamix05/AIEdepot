@@ -16,19 +16,7 @@
   <link href="{{url_for('static', filename='css/dashboard.css') }}" rel="stylesheet">
   <link href="{{url_for('static', filename='css/resultat.css') }}" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard_notif.css') }}">
-  <style>
-    .waiting-message {
-      margin-top: 20px;
-      padding: 15px 20px;
-      background: linear-gradient(to right, #a0d2eb, #84ceeb);
-      color: #24243e;
-      font-weight: 600;
-      font-size: 18px;
-      border-radius: 10px;
-      text-align: center;
-      box-shadow: 0 4px 15px rgba(160, 210, 235, 0.5);
-    }
-  </style>
+
 </head>
 
 <body>
@@ -50,7 +38,7 @@
           Logs
         </a>
         {% endif %}
-         {% if session.get("loginU") == "john.doe@gmail.com" %}
+        {% if session.get("loginU") == "john.doe@gmail.com" %}
         <a class="shiny-white-button me-2" href="/dashboard?action=retrain">
           Actualiser
         </a>
@@ -76,8 +64,8 @@
           <div class="custom-input mb-3 mb-md-0 d-flex align-items-center gap-3">
             <!-- Input fichier caché -->
             <!--<input id="fileInput" type="file" name="file" accept=".eml" hidden required>-->
-            <input type="file" name="file" value="1">
-
+            <input type="file" name="file" value="1" id="fileInput" placeholder="Importer un fichier ...">
+            <!--<span id="fileNameDisplay">Importer un fichier...</span>-->
             <!-- Label stylisé avec icône + texte -->
             <!-- <label for="fileInput" class="form-control d-flex align-items-center">
               <i class="bi bi-paperclip"></i>
@@ -92,25 +80,26 @@
       </div>
 
 
-      <div id="progressCircleContainer" style="display:none;" class="progress-circle-container">
+      <!-- <div id="progressCircleContainer" style="display:none;" class="progress-circle-container">
         <svg class="progress-circle" width="120" height="120">
           <circle class="bg" cx="60" cy="60" r="54"></circle>
           <circle class="progress" cx="60" cy="60" r="54"></circle>
         </svg>
         <div id="progressText" class="progress-text">0%</div>
-      </div>
+      </div> -->
 
-      <div id="waitingMessage" class="waiting-message" style="display:none;">
-        🔍 Analyse en cours... Veuillez patienter quelques instants.
-      </div>
+      <!--<div id="loadingSpinner" style="display:none; text-align:center; margin-top:20px;">
+        <div class="spinner-modern"></div>
+      </div>-->
 
-      <!--<div id="resultBox" class="result-box shadow-lg"></div> -->
-      <div id="resultBox" class="result-box shadow-lg">
-        {% if result %}
-        <p class="fw-bold">Résultat de l'analyse :</p>
-        <div class="result-highlight">{{ result }}</div>
-        {% endif %}
-      </div>
+      <!-- <div id="waitingMessage" class="waiting-message" style="display:none;">
+        Analyse en cours... Veuillez patienter quelques instants.
+      </div>-->
+
+      <div id="resultBox" class="result-box" style="border:none !important; box-shadow:none !important;  background: linear-gradient(to right, #0f0c29, #302b63, #24243e);"></div>
+
+
+
     </div>
   </main>
 
@@ -131,33 +120,48 @@
   <script src="{{ url_for('static', filename='js/dashboard_notif.js') }}"></script>
 
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      console.log("notif_message:", "{{ notif_message }}"); // DEBUG
-      console.log("notif_type:", "{{ notif_type }}");       // DEBUG
-      {% if notif_message %}
-      showNotification("{{ notif_message|escape }}", "{{ notif_type|escape }}");
-      {% endif %}
-    });
 
-
-    document.getElementById("analyserBtn").addEventListener("submit", function (e) {
-      e.preventDefault(); // empêche le reload immédiat
-      // Affiche le message d’attente
-      document.getElementById("waitingMessage").style.display = "block";
-
-      // Envoie le fichier au serveur
+    document.getElementById("uploadForm").addEventListener("submit", function (e) {
+      e.preventDefault();
       let formData = new FormData(document.getElementById("uploadForm"));
-      fetch("/upload", {
-        method: "POST",
-        body: formData
-      })
-        .then(response => response.text())
-        .then(html => {
-          document.getElementById("resultBox").innerHTML = html;
-          // Cache le message une fois terminé
-          document.getElementById("waitingMessage").style.display = "none";
+
+      fetch("/upload", { method: "POST", body: formData })
+        .then(async response => {
+          const contentType = response.headers.get("content-type") || "";
+
+          if (contentType.includes("application/json")) {
+            // Cas erreur
+            let data = await response.json();
+            const notifContainer = document.getElementById("notificationContainer");
+            const notifMessage = notifContainer.querySelector(".notification-message");
+            const icon = document.getElementById("notificationIcon");
+
+            notifMessage.textContent = data.notif_message;
+            icon.className = "notification-icon bi bi-exclamation-circle text-danger";
+            console.log("Notification affichée:", data.notif_message, "Type:", data.notif_type); // DEBUG
+
+            notifContainer.classList.add("show");
+            setTimeout(() => {
+              notifContainer.classList.remove("show");
+            }, 4000);
+          } else {
+            // Cas succès
+            let html = await response.text();
+            const resultBox = document.getElementById("resultBox");
+            resultBox.innerHTML = html;
+            resultBox.classList.add("show"); //  rend visible
+
+          }
+        })
+        .catch(err => {
+          console.error("Erreur fetch:", err);
         });
     });
+
+
+    /*document.getElementById("uploadForm").addEventListener("submit", function () {
+      document.getElementById("loadingSpinner").style.display = "block";
+    });*/
 
 
 

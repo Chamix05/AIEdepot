@@ -1,31 +1,16 @@
-import os, re, email
+import os, re, email,json
+from tempfile import template
 import joblib
 import scipy.sparse as sp
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from ..db_connection import get_connection
-#from public.db_connection import get_connection
 import numpy as np
+import random
 
-# Charger le modèle et les objets de prétraitement sauvegardés
-#base_dir = os.path.dirname(__file__)  # dossier courant
-#model_path = os.path.join(base_dir, "..","..", "models", "naive_bayes.pkl")
-#model_dir = os.path.join(base_dir, "..","..","models")
-#model_path = os.path.join(model_dir, "naive_bayes.pkl")
-#if not os.path.exists(model_path):
-    #raise FileNotFoundError(f"Modèle introuvable à {model_path}. Vérifie que le fichier est bien présent.")
-#bayes = joblib.load(model_path)
 
 pipeline = joblib.load("src/models/pipeline.pkl")
 bayes = joblib.load("src/models/naive_bayes.pkl")
-
-
-#vectorizer_body = joblib.load(os.path.join(model_dir, "vectorizer.pkl"))
-#vectorizer_subject = joblib.load(os.path.join(model_dir, "vectorizer_subject.pkl"))
-#vectorizer_coined = joblib.load(os.path.join(model_dir, "vectorizer_coined.pkl"))
-#print("Taille vocabulaire Coined:", len(vectorizer_coined.vocabulary_))
-#scaler = joblib.load(os.path.join(model_dir, "scaler.pkl"))
-#encoder = joblib.load(os.path.join(model_dir, "encoder.pkl"))
 
 
 vectorizer_body = pipeline["vectorizer_body"]
@@ -34,7 +19,12 @@ vectorizer_coined = pipeline["vectorizer_coined"]
 encoder = pipeline["encoder"]
 scaler = pipeline["scaler"]
 
+with open("src/public/services/coined_word.json", "r", encoding="utf-8") as f:
+    coined_dict = json.load(f)
 
+phishing_words = set(coined_dict["phishing_words"])
+legit_words = set(coined_dict["legit_words"])
+ambiguous_words = set(coined_dict["ambiguous_words"])
 
 
 stop_words = set(stopwords.words("english"))
@@ -73,54 +63,31 @@ def safe_encode_sender(sender: str, encoder) -> int:
     else:
         return encoder.transform(["unknown"])[0]
 
+
 # Marques sensibles et domaines autorisés
-trusted_domains = {
-    "amazon": [
-        r".*@([a-z0-9.-]+\.)?amazon\.[a-z]{2,}$",
-        r"newsletter@amazon\.com$"
-    ],
-    "paypal": [r".*@([a-z0-9.-]+\.)?paypal\.[a-z]{2,}$"],
-    "microsoft": [
-        r".*@([a-z0-9.-]+\.)?microsoft\.[a-z]{2,}$",
-        r".*@outlook\.[a-z]{2,}$"
-    ],
-    "google": [
-        r".*@([a-z0-9.-]+\.)?google\.[a-z]{2,}$",
-        r".*@gmail\.[a-z]{2,}$"
-    ],
-    "apple": [
-        r".*@([a-z0-9.-]+\.)?apple\.[a-z]{2,}$",
-        r".*@icloud\.[a-z]{2,}$"
-    ],
-    "facebook": [
-        r".*@([a-z0-9.-]+\.)?facebook\.[a-z]{2,}$",
-        r".*@meta\.[a-z]{2,}$"
-    ],
-    "twitter": [
-        r".*@([a-z0-9.-]+\.)?twitter\.[a-z]{2,}$",
-        r".*@x\.[a-z]{2,}$"
-    ],
-    "linkedin": [r".*@([a-z0-9.-]+\.)?linkedin\.[a-z]{2,}$"],
-    "ebay": [r".*@([a-z0-9.-]+\.)?ebay\.[a-z]{2,}$"],
-    "hsbc": [r".*@([a-z0-9.-]+\.)?hsbc\.[a-z]{2,}$"],
-    "bankofamerica": [r".*@([a-z0-9.-]+\.)?bankofamerica\.[a-z]{2,}$"]
-}
+
+with open("src/dataset/trusted_domains.json", "r", encoding="utf-8") as f:
+    trusted_domains = json.load(f)
 
 
-
+#Vérifie si le domaine de l’expéditeur correspond à celui des URLs.
+#cette fonction sert à vérifier si les liens dans l’email pointent bien vers le même domaine que 
+# l’expéditeur
 def is_domain_consistent(sender, urls):
     sender_domain = sender.split("@")[-1]
     for u in urls:
         try:
             domain = u.split("/")[2]
-            if sender_domain not in domain:
-                return False
+            if sender_domain in domain:
+                return True
         except:
             continue
-    return True
+    return False
 
 
 
+
+#Vérifie si l’expéditeur correspond à une marque connue mais avec un domaine non autorisé
 def is_suspicious_sender(sender: str) -> int:
     sender = str(sender).strip().lower()
     for brand, patterns in trusted_domains.items():
@@ -152,8 +119,45 @@ def save_email(subject, body, urls, loginU, resultat):
     db.commit()
     cursor.close()
     db.close()
+    
 
-def analyze_email(filename: str, loginU: str) -> str:
+
+
+def get_sender(filepath: str) -> str:
+    """Récupérer l'expéditeur d'un email .eml, même si le champ 'From' est absent"""
+    with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
+        msg = email.message_from_file(f)
+    
+    # Essayer d'abord l'en-tête standard
+    sender = msg.get("from")
+    if sender:
+        return sender.strip()
+    
+    # Si pas d'en-tête 'From', lire le contenu brut et prendre la dernière ligne
+    with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
+        lines = f.readlines()
+        if lines:
+            last_line = lines[-1].strip()
+            return last_line if last_line else "unknown"
+    
+    return "unknown"
+
+
+    text = (subject + " " + body).lower().split()
+    phishing_detected = [w for w in text if w in phishing_words]
+    legit_detected = [w for w in text if w in legit_words]
+    return " ".join(phishing_detected), " ".join(legit_detected)
+def extract_coined_words(subject: str, body: str) -> str:
+    """
+    Retourne une chaîne contenant les mots détectés
+    (phishing ou légitimes) présents dans l'email.
+    """
+    text = (subject + " " + body).lower().split()
+    keywords = [w for w in text if w in phishing_words or w in legit_words]
+    return " ".join(keywords)
+
+
+def analyze_email(filename: str, loginU: str) -> tuple[str, str]:
     """Pipeline complet d'analyse d'un email uploadé"""
     filepath = os.path.join("uploads", filename)
     subject, body, sender = extract_email(filepath)
@@ -161,24 +165,22 @@ def analyze_email(filename: str, loginU: str) -> str:
     # Nettoyage
     subject_clean = clean_text(subject)
     body_clean = clean_text(body)
+    sender_normal=get_sender(filepath)
 
     # URLs
-    urls = re.findall(r"http[s]?://\S+", body)
+    urls = re.findall(r'\b(?:[a-zA-Z][a-zA-Z0-9+.-]*://[^\s]+|www\.[^\s]+)', body)
     url_count = len(urls)
-    url_has_login = int(any("login" in u.lower() for u in urls))
-    url_has_bank = int(any("bank" in u.lower() for u in urls))
-    url_has_secure = int(any("secure" in u.lower() for u in urls))
-    url_has_update = int(any("update" in u.lower() for u in urls))
     url_avg_length = int(sum(len(u) for u in urls) / url_count) if url_count > 0 else 0
     url_domains = len(set([u.split("/")[2] for u in urls if "://" in u]))
-    has_attachment = 0
     sender_domain_suspicious = is_suspicious_sender(sender)
     domain_consistent = is_domain_consistent(sender, urls)
+    coined_clean = clean_text(extract_coined_words(subject_clean, body_clean))
+    X_coined = vectorizer_coined.transform([coined_clean])
+
 
     # Features numériques (exactement comme au prétraitement)
-    features = [[url_count, url_has_login, url_has_bank, url_has_secure,
-                 url_has_update, url_avg_length, url_domains,
-                 has_attachment, sender_domain_suspicious]]
+    features = [[url_count, url_avg_length, url_domains,
+                 sender_domain_suspicious]]
     X_other = scaler.transform(features)
 
     # Encodage expéditeur
@@ -188,38 +190,105 @@ def analyze_email(filename: str, loginU: str) -> str:
     X = sp.hstack([
         vectorizer_body.transform([body_clean]),
         vectorizer_subject.transform([subject_clean]),
-        vectorizer_coined.transform([""]),  # si pas de coined words
+        X_coined,
         sp.csr_matrix([sender_encoded]).T,
         sp.csr_matrix(X_other)
     ])
     
-    print("Body:", vectorizer_body.transform([body_clean]).shape)
-    print("Subject:", vectorizer_subject.transform([subject_clean]).shape)
-    print("Coined:", vectorizer_coined.transform([""]).shape)
-    print("Sender:", sp.csr_matrix([sender_encoded]).T.shape)
-    print("Other:", sp.csr_matrix(X_other).shape)
-    print("Final X:", X.shape)
-   
-   
-    # Prédiction avec seuil ajusté
-    proba = bayes.predict_proba(X)
-    # proba[0][1] = probabilité que ce soit phishing
-    if proba[0][1] >= 0.6:
-        prediction = 1  # phishing
-    else:
-        prediction = 0  # legitime
 
-    # Prédiction
-    #Donc tu as deux signaux qui se contredisent :
-    #Le modèle ML dit phishing.
-    #La règle métier dit légitime.
-    prediction = bayes.predict(X)
-    if prediction == 1 and sender_domain_suspicious == 0 and domain_consistent:
-    # Le modèle dit phishing mais l'expéditeur est whitelisté
-      resultat ="legitime"
+
+    # Prédiction avec seuil ajusté
+    y_pred = bayes.predict(X).item()
+    if y_pred==0:
+        prediction = "legitime"  
     else:
-      resultat ="phishing" if prediction == 1 else  "legitime"
-     # Sauvegarde en base
+        prediction = "phishing" 
+        
+    legit_detected = list(set([w for w in body_clean.split() if w in legit_words]))
+    phishing_detected = list(set([w for w in body_clean.split() if w in phishing_words]))
+    ambiguous_detected = list(set([w for w in body_clean.split() if w in ambiguous_words]))
+
+    suspicion_score = 0
+    if sender_domain_suspicious == 1:
+     suspicion_score += 0.5
+    if not domain_consistent:
+     suspicion_score += 0.5
+    if url_count > 2 or url_avg_length > 100:
+     suspicion_score += 1
+   
+         
+    # Pondération des mots
+    if len(phishing_detected) >= 2:
+     suspicion_score += 3
+    if len(ambiguous_detected) >= 2:
+     suspicion_score += 0.25 # 1 faible poids 
+    if len(legit_detected) >= 2:
+     suspicion_score -= 1  #0.5 réduit le score si beaucoup de mots légitimes
+     
+     # Bonus si mot critique dans le subject
+     # critical_subject_words = ["urgent", "suspend", "secure-login", "account", "immediate", "immediately"]
+     #if any(word in subject_clean for word in critical_subject_words):
+      #suspicion_score += 2   # poids fort mais pas verdict direct
+     
+    # Décision finale
+    if suspicion_score >= 4:
+      resultat = "phishing"
+    elif suspicion_score <= 0:
+      resultat = "legitime"
+    else:
+     resultat = prediction  # laisse le modèle décider si score neutre
+
+    
+    if sender_normal == "unknown" and suspicion_score < 2 and not phishing_detected:
+     resultat = "legitime"
+
+
      
     save_email(subject, body, urls, loginU, resultat)
-    return resultat
+    
+    templates = [
+    "L'expression {w} est repérée, fréquemment associée à des emails frauduleux."
+      ]
+    
+    extra_li = ""
+    if resultat == "legitime":
+       extra_li += "<li class='list-group-item'>✅ Cet email ne présente aucun risque particulier</li>"
+    
+     # Si des mots légitimes ont été détectés
+       #legit_detected = [w for w in body_clean.split() if w in legit_words]
+       if legit_detected:
+         words_legit_str = ", ".join(set(legit_detected))
+         extra_li += f"<li class='list-group-item'>✅ Mots légitimes détectés : {words_legit_str}</li>"
+    
+      # Vérification des URLs
+       if url_count <= 2 and url_avg_length < 100 and domain_consistent:
+        extra_li += "<li class='list-group-item'>✅ Les URLs sont peu nombreuses, cohérentes et de longueur normale</li>"
+       else:
+        extra_li += "<li class='list-group-item'>⚠️ Attention : certaines caractéristiques des URLs méritent une vérification</li>"
+    else:  # resultat == "phishing"
+        #phishing_detected = [w for w in body_clean.split() if w in phishing_words]
+        if not domain_consistent:
+            if phishing_detected:
+                # Joindre tous les mots trouvés en une seule ligne
+                words_str = ", ".join(set(phishing_detected))
+                phrase = templates[0].format(w=words_str)
+                extra_li += f"<li class='list-group-item'>⚠️ {phrase}</li>"
+            else: 
+                extra_li += "<li class='list-group-item'>⚠️ Aucun mot sensible détecté, mais l'email reste suspect.</li>"
+
+        # Vérification des URLs
+        if url_avg_length >= 100 or url_count > 2:
+            extra_li += f"<li class='list-group-item'>⚠️ Les liens sont trop nombreux ou trop longs ({url_count} liens, longueur moyenne {url_avg_length} caractères)</li>"
+  
+        
+    # Bloc HTML final
+    explanation_html = f"""
+   <ul class="list-group list-group-flush">
+    <li class="list-group-item">Expéditeur : <strong>{sender_normal}</strong> → {"suspect" if sender_domain_suspicious else "non suspect"}</li>
+     {extra_li}
+    </ul>
+    """
+    
+
+    return resultat, explanation_html
+    

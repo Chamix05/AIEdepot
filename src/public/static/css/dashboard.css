@@ -150,15 +150,19 @@
  .result-box {
    margin-top: 40px;
    padding: 25px;
-   border-radius: 10px;
+   /*border-radius: 10px;*/
    display: none;
-   background: rgba(36, 36, 62, 0.7);
+   /*background: rgba(36, 36, 62, 0.7);*/
+  /*background: linear-gradient(to right, #0f0c29, #302b63, #24243e);*/
    /* Fond semi-transparent sombre */
    color: #ffffff;
+   outline: none !important;
    font-weight: 500;
    font-size: 18px;
-   border: 1px solid rgba(173, 216, 230, 0.3);
-   box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+   /*border: 1px solid rgba(173, 216, 230, 0.3);*/
+   border: none;
+   /*box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);*/
+   box-shadow: none;
    backdrop-filter: blur(5px);
    /* Effet de flou */
    -webkit-backdrop-filter: blur(5px);
@@ -168,13 +172,21 @@
    background: rgba(255, 99, 71, 0.7);
    /* Rouge pour les erreurs */
    border-color: rgba(255, 99, 71, 0.5);
+
+ }
+
+ .result-box.show {
+   display: block;
+   /*  rend visible */
+   opacity: 1;
+   /*  fade-in */
  }
 
  .result-box.success {
    background: rgba(144, 238, 144, 0.7);
    /* Vert pour les succès */
    border-color: rgba(144, 238, 144, 0.5);
-   color: #24243e;
+   /*color: #24243e;*/
    /* Texte sombre pour le succès */
  }
 
