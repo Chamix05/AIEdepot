@@ -1,0 +1,40 @@
+{
+ "legit_words": [
+  "order", "confirmation", "receipt", "delivery", "tracking", "package", "status",
+  "meeting", "schedule", "agenda", "minutes", "project", "report", "summary",
+  "task", "deadline", "customer", "service", "team", "newsletter", "subscription",
+  "invitation", "welcome", "thank you", "regards", "best wishes", "sincerely",
+  "university", "school", "course", "exam", "assignment", "github", "gitlab",
+  "repository", "commit", "issue", "zoom", "teams", "slack", "trello", "calendar",
+  "registration", "appointment", "reminder", "library", "reservation", "conference",
+  "medical", "center", "clinic", "doctor", "hospital", "prescription", "health",
+  "insurance", "patient", "booking", "ticket", "boarding", "flight", "hotel",
+  "check-in", "check-out", "travel", "itinerary", "workshop", "symposium",
+  "event", "session", "speaker", "attendee", "invoice-confirmation",
+  "subscription-renewal", "customer-support", "service-desk", "billing-department"
+]
+,
+ "phishing_words": 
+   [
+  "act-now", "activation", "alert", "attention", "authenticate", "authorize",
+  "blocked", "bonus", "cashback", "claim", "click", "compromised",
+  "confirm-details", "coupon", "credentials", "credit-card", "customer-id",
+  "danger", "deactivated", "deal", "debit-card", "disabled", "discount",
+  "exclusive", "expire", "expires", "expiring", "final-notice", "fraud",
+  "free", "gift", "identity", "immediate-action", "immediately", "jackpot",
+  "last-chance", "limited-offer", "limited-time", "locked", "login", "login-page",
+  "lottery", "offer", "password", "personal", "prize", "prize-money", "profile",
+  "promotion", "reactivate", "refund", "reset", "restricted", "reward", "risk",
+  "safe", "secure-login", "signin", "suspend", "suspended", "tax", "terminate",
+  "termination", "transaction", "transfer", "unauthorized", "unlock",
+  "update-info", "urgent", "urgent-action", "urgent-response", "urgent-update",
+  "validate", "verification", "verify", "violation", "voucher", "warning",
+  "winner", "wire", "wire-transfer"
+
+  ], 
+  "ambiguous_words" : [
+     "account", "billing", "credit", "deadline", "details", "important",
+  "information", "invoice", "payment", "security", "statement", "update", "user",
+  "address", "support", "department"
+]
+}
