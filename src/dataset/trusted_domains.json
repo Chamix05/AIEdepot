@@ -1,0 +1,61 @@
+{
+  "amazon": [
+    ".*@([a-z0-9.-]+\\.)?amazon\\.[a-z]{2,}$",
+    "newsletter@amazon\\.com$"
+  ],
+  "microsoft": [
+    ".*@([a-z0-9.-]+\\.)?microsoft\\.[a-z]{2,}$",
+    ".*@outlook\\.[a-z]{2,}$",
+    ".*@teams\\.microsoft\\.com$"
+  ],
+  "google": [
+    ".*@([a-z0-9.-]+\\.)?google\\.[a-z]{2,}$",
+    ".*@gmail\\.[a-z]{2,}$",
+    ".*@drive\\.google\\.com$"
+  ],
+  "apple": [
+    ".*@([a-z0-9.-]+\\.)?apple\\.[a-z]{2,}$",
+    ".*@icloud\\.[a-z]{2,}$"
+  ],
+  "paypal": [".*@([a-z0-9.-]+\\.)?paypal\\.[a-z]{2,}$"],
+  "facebook": [
+    ".*@([a-z0-9.-]+\\.)?facebook\\.[a-z]{2,}$",
+    ".*@meta\\.[a-z]{2,}$"
+  ],
+  "twitter": [
+    ".*@([a-z0-9.-]+\\.)?twitter\\.[a-z]{2,}$",
+    ".*@x\\.[a-z]{2,}$"
+  ],
+  "linkedin": [".*@([a-z0-9.-]+\\.)?linkedin\\.[a-z]{2,}$"],
+  "instagram": [".*@instagram\\.com$"],
+  "tiktok": [".*@tiktok\\.com$"],
+  "snapchat": [".*@snapchat\\.com$"],
+  "zoom": [".*@zoom\\.us$"],
+  "github": [".*@github\\.com$"],
+  "gitlab": [".*@gitlab\\.com$"],
+  "bitbucket": [".*@bitbucket\\.org$"],
+  "trello": [".*@trello\\.com$"],
+  "dropbox": [".*@dropbox\\.com$"],
+  "onedrive": [".*@onedrive\\.com$"],
+  "box": [".*@box\\.com$"],
+  "mega": [".*@mega\\.nz$"],
+  "pcloud": [".*@pcloud\\.com$"],
+  "shopify": [".*@shopify\\.com$"],
+  "etsy": [".*@etsy\\.com$"],
+  "aliexpress": [".*@aliexpress\\.com$"],
+  "ebay": [".*@([a-z0-9.-]+\\.)?ebay\\.[a-z]{2,}$"],
+  "yahoo": [".*@yahoo\\.[a-z]{2,}$"],
+  "protonmail": [".*@protonmail\\.com$"],
+  "hsbc": [".*@([a-z0-9.-]+\\.)?hsbc\\.[a-z]{2,}$"],
+  "bankofamerica": [".*@([a-z0-9.-]+\\.)?bankofamerica\\.[a-z]{2,}$"],
+  "societegenerale": [".*@societegenerale\\.[a-z]{2,}$"],
+  "barclays": [".*@barclays\\.[a-z]{2,}$"],
+  "orange": [".*@orange\\.[a-z]{2,}$"],
+  "sfr": [".*@sfr\\.[a-z]{2,}$"],
+  "bouyguestelecom": [".*@bouyguestelecom\\.[a-z]{2,}$"],
+  "verizon": [".*@verizon\\.[a-z]{2,}$"],
+  "att": [".*@att\\.[a-z]{2,}$"],
+  "edu": [".*@([a-z0-9.-]+\\.)?edu$"],
+  "university": [".*@([a-z0-9.-]+\\.)?univ\\.[a-z]{2,}$"],
+  "store-example": ["^.*store-example\\.com$"]
+}
