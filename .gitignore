@@ -1,2 +1,5 @@
 # Ignorer tout le dossier dataset
 #src/dataset/
+# Ignorer les gros fichiers dataset SAUF trusted_domains.json
+src/dataset/*
+!src/dataset/trusted_domains.json
