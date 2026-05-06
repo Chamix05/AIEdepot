@@ -4,7 +4,7 @@ from flask import redirect, url_for, render_template
 import sys
 #from ..services import verif_mdp
 #from services import verif_mdp
-from . import verif_mdp
+from . import verif_mdp#test
 
 def authenticate(username, password):
     db =  get_connection()
