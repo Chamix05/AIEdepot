@@ -5,7 +5,7 @@ from ..services.email_analysis import analyze_email
 import os
 from ..services.log import extract_log
 from ..services import verif_mdp
-from flask import redirect, render_template,request, session, url_for, flash
+from flask import jsonify, redirect, render_template,request, session, url_for, flash
 from ..services import cpt_service
 from ..services.entrainer import retrain_model
 #from ..services import authen_user_service, authen_service,login_admin
@@ -136,27 +136,29 @@ def init_routes(app):
     @app.route("/upload", methods=["POST"])
     def upload():
         print("UPLOAD ROUTE CALLED")
-        notif_message = None
-        notif_type = None
+        #notif_message = None
+        #notif_type = None
         file = request.files.get("file")
         print("DEBUG file object:", file)
         
         # Cas 1 : champ absent ou fichier non choisi
         if not file or not file.filename or file.filename.strip() == "":
-         notif_message = "Veuillez choisir un fichier"
-         notif_type = "error"
+         #notif_message = "Veuillez choisir un fichier"
+         #notif_type = "error"
          print("DEBUG: Aucun fichier choisi")
-         return render_template("dashboard.html", files=uploaded_files,
-                               notif_message=notif_message, notif_type=notif_type)
+         #return render_template("dashboard.html", files=uploaded_files,
+                               #notif_message=notif_message, notif_type=notif_type)
+         return  jsonify({"notif_message": "Veuillez choisir un fichier", "notif_type": "error"})
         
          
         print("DEBUG filename:", repr(file.filename))
 
         if not file.filename.lower().endswith(".eml"):
-            notif_message = "Seuls les fichiers .eml sont autorisés"
-            notif_type = "error"
-            return render_template("dashboard.html", files=uploaded_files,
-                                   notif_message=notif_message, notif_type=notif_type)
+            #notif_message = "Seuls les fichiers .eml sont autorisés"
+            #notif_type = "error"
+            #return render_template("dashboard.html", files=uploaded_files,
+                                   #notif_message=notif_message, notif_type=notif_type)
+            return jsonify({"notif_message": "Seuls les fichiers .eml sont autorisés", "notif_type": "error"})
 
         # Sauvegarde
         filepath = os.path.join("uploads", file.filename)
@@ -173,21 +175,33 @@ def init_routes(app):
         print("DEBUG loginU in session:", session.get("loginU"))
 
 
-        notif_message = "Fichier importé avec succès"
-        notif_type = "success"
+        #notif_message = "Fichier importé avec succès"
+        #notif_type = "success"
         
         
         # Appel à ton script d’analyse
-        result = analyze_email(file.filename, loginU)
-        if result == "phishing":
-         notif_message = "Cet email est suspecté de phishing"
-         notif_type = "error"
-        else:
-         notif_message = "Cet email est légitime"
-         notif_type = "success"
+        result,explanation_html = analyze_email(file.filename, loginU)
+        
+       # if result == "phishing":
+         #notif_message = "Cet email est suspecté de phishing"
+         #notif_type = "error"
+        #else:
+         #notif_message = "Cet email est légitime"
+        # notif_type = "success"
 
-        return render_template("dashboard.html", files=uploaded_files,
-                               notif_message=notif_message, notif_type=notif_type,  result=result)
+        #return render_template("dashboard.html", files=uploaded_files,
+                              # notif_message=notif_message, notif_type=notif_type,  result=result)
+        return  f"""
+         <div class="card mt-4" style="border:none; box-shadow:none;">
+        <div class="card-header bg-{'danger' if result=='phishing' else 'success'} text-white">
+                <strong>{result.upper()}</strong>
+           </div>
+            <div class="card-body">
+               {explanation_html}
+            </div>
+         </div>
+       """
+
         
         
     @app.route("/logs")
