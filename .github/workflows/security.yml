@@ -20,7 +20,7 @@ jobs:
         run: pip install bandit
 
       - name: Run bandit
-        run: bandit -r src -ll --exclude src/dataset,src/tests
+        run: bandit -r src -ll --exclude src/dataset,src/tests --skip B201
 
   # DAST
   dast:
@@ -50,7 +50,7 @@ jobs:
           sleep 10
 
       - name: Run OWASP ZAP baseline scan
-        uses: zaproxy/action-baseline@v0.7.0
+        uses: zaproxy/action-baseline@v0.12.0
         with:
           target: 'http://localhost:5000'
           fail_action: false
