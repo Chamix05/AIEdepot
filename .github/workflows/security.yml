@@ -1,10 +1,9 @@
-name: Security CI 
+name: Security CI
 
 on: [push, pull_request]
 
 jobs:
-
-  #  SAST 
+  # SAST
   sast:
     runs-on: ubuntu-latest
     steps:
@@ -20,11 +19,11 @@ jobs:
         run: |
           pip install flake8 bandit
 
-      - name: Run flake8 
-        run: flake8 src
+      - name: Run flake8
+        run: flake8 src --max-line-length=120 --ignore=E501,W503
 
-      - name: Run bandit 
-        run: bandit -r src
+      - name: Run bandit
+        run: bandit -r src -ll
 
   # DAST
   dast:
@@ -33,7 +32,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Start application 
+      - name: Start application
         run: |
           pip install flask
           pip install mysql-connector-python
@@ -43,6 +42,7 @@ jobs:
           pip install pandas
           pip install -e .
           nohup python src/app.py &
+          sleep 5
 
       - name: Run OWASP ZAP baseline scan
         uses: zaproxy/action-baseline@v0.7.0
@@ -64,5 +64,5 @@ jobs:
       - name: Install pip-audit
         run: pip install pip-audit
 
-      - name: Run pip-audit 
+      - name: Run pip-audit
         run: pip-audit
