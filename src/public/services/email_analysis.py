@@ -67,7 +67,7 @@ def safe_encode_sender(sender: str, encoder) -> int:
 # Marques sensibles et domaines autorisés
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
 
-with open(os.path.join(ROOT_DIR, "src/dataset/trusted_domains.json"), "r", encoding="utf-8") as f:
+with open(os.path.join(ROOT_DIR, "C:/Users/LAPTA/Documents/M1ASR/M1 S2/PROJ AIE/vsfinale/Phishing_PRJ-c2/src/dataset/trusted_domains.json"), "r", encoding="utf-8") as f:
     trusted_domains = json.load(f)
 #with open("src/dataset/trusted_domains.json", "r", encoding="utf-8") as f:
  #   trusted_domains = json.load(f)
